@@ -4,11 +4,10 @@ import useRegisterModal from "@/hooks/useRegisterModal";
 import React, { useCallback, useState } from "react";
 import Input from "../Input";
 import Modal from "../Modal";
-import LoginModal from "./LoginModal";
 
 const RegisterModal = () => {
-  const registerModal = useRegisterModal();
   const loginModal = useLoginModal();
+  const registerModal = useRegisterModal();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -16,6 +15,15 @@ const RegisterModal = () => {
   const [name, setName] = useState("");
 
   const [isLoading, setIsLoading] = useState(false);
+
+  const onToggle = useCallback(() => {
+    if (isLoading) {
+      return;
+    }
+
+    registerModal.onClose();
+    loginModal.onOpen();
+  }, [loginModal, registerModal, isLoading]);
 
   const onSubmit = useCallback(async () => {
     try {
@@ -30,20 +38,12 @@ const RegisterModal = () => {
     }
   }, [registerModal]);
 
-  const onToggle = useCallback(() => {
-    if (isLoading) {
-      return;
-    }
-
-    registerModal.onClose();
-    loginModal.onOpen();
-  }, [loginModal, registerModal, isLoading]);
-
   const bodyContent = (
     <div className="flex flex-col gap-4">
       <Input
         disabled={isLoading}
         placeholder="Email"
+        type="email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
       />
@@ -51,12 +51,14 @@ const RegisterModal = () => {
         disabled={isLoading}
         placeholder="Name"
         value={name}
+        type="text"
         onChange={(e) => setName(e.target.value)}
       />
       <Input
         disabled={isLoading}
         placeholder="Username"
         value={username}
+        type="text"
         onChange={(e) => setUsername(e.target.value)}
       />
       <Input
@@ -92,7 +94,7 @@ const RegisterModal = () => {
       disabled={isLoading}
       isOpen={registerModal.isOpen}
       title="Login"
-      actionLabel="Sign in"
+      actionLabel="Sign Up"
       onClose={registerModal.onClose}
       onSubmit={onSubmit}
       body={bodyContent}

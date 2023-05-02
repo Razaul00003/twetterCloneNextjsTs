@@ -12,6 +12,14 @@ const LoginModal = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const onToggle = useCallback(() => {
+    if (isLoading) {
+      return;
+    }
+
+    loginModal.onClose();
+    registerModal.onOpen();
+  }, [loginModal, registerModal, isLoading]);
 
   const onSubmit = useCallback(async () => {
     try {
@@ -26,21 +34,13 @@ const LoginModal = () => {
     }
   }, [loginModal]);
 
-  const onToggle = useCallback(() => {
-    if (isLoading) {
-      return;
-    }
-
-    registerModal.onClose();
-    loginModal.onOpen();
-  }, [loginModal, registerModal, isLoading]);
-
   const bodyContent = (
     <div className="flex flex-col gap-4">
       <Input
         placeholder="Email"
         onChange={(e) => setEmail(e.target.value)}
         value={email}
+        type="email"
         disabled={isLoading}
       />
       <Input
@@ -80,6 +80,7 @@ const LoginModal = () => {
       onClose={loginModal.onClose}
       onSubmit={onSubmit}
       body={bodyContent}
+      footer={footerContent}
     />
   );
 };
