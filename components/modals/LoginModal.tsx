@@ -1,5 +1,8 @@
+import { signIn } from "next-auth/react";
+import { useCallback, useState } from "react";
+import { toast } from "react-hot-toast";
+
 import useLoginModal from "@/hooks/useLoginModal";
-import React, { useCallback, useState } from "react";
 import useRegisterModal from "@/hooks/useRegisterModal";
 
 import Input from "../Input";
@@ -12,27 +15,30 @@ const LoginModal = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const onToggle = useCallback(() => {
-    if (isLoading) {
-      return;
-    }
-
-    loginModal.onClose();
-    registerModal.onOpen();
-  }, [loginModal, registerModal, isLoading]);
 
   const onSubmit = useCallback(async () => {
     try {
       setIsLoading(true);
-      // to do log in
+
+      await signIn("credentials", {
+        email,
+        password,
+      });
+
+      toast.success("Logged in");
 
       loginModal.onClose();
     } catch (error) {
-      console.log(error);
+      toast.error("Something went wrong");
     } finally {
       setIsLoading(false);
     }
-  }, [loginModal]);
+  }, [email, password, loginModal]);
+
+  const onToggle = useCallback(() => {
+    loginModal.onClose();
+    registerModal.onOpen();
+  }, [loginModal, registerModal]);
 
   const bodyContent = (
     <div className="flex flex-col gap-4">
@@ -40,7 +46,6 @@ const LoginModal = () => {
         placeholder="Email"
         onChange={(e) => setEmail(e.target.value)}
         value={email}
-        type="email"
         disabled={isLoading}
       />
       <Input
@@ -52,6 +57,7 @@ const LoginModal = () => {
       />
     </div>
   );
+
   const footerContent = (
     <div className="text-neutral-400 text-center mt-4">
       <p>
